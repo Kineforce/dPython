@@ -12,18 +12,23 @@ browser = Chrome(executable_path="/usr/local/share/chromedriver")
 
 
 def clickSeasonDiv():
+    class_parent_div = 'Zz99o'
     class_season_divs = 'bSmy5'
 
-    while True:
-        try :
-            season_divs = WebDriverWait(browser, 10).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, class_season_divs))
-            )  
-            return season_divs
+    try :
+        wait_parent_div = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, class_season_divs))
+        )  
+        
+        season_divs = browser.find_elements_by_class_name(class_season_divs)
+        if ( len (season_divs) == 0 ):
+            raise NameError('Recarregar mapeamento de divs')
 
-        except:
-            print ("Algo deu errado ao coletar todas as divs das temporadas, tentando novamente...")
-    
+        return season_divs
+
+    except:
+        print ("Algo deu errado ao coletar todas as divs das temporadas, tentando novamente...")
+        clickSeasonDiv()
 
 
 def mainIteration():
@@ -34,59 +39,62 @@ def mainIteration():
     print('Buscando todas as divs das temporadas...')
     print('-----------------------------------------')
     # Acha todos as divs clicáveis das temporadas
-    
+    season_divs = clickSeasonDiv();
 
     print('Busquei todas as divs das temporadas')
     print('-----------------------------------------')
-    # Verifica se existe alguma div para iterar
-    if ( len(class_season_divs) > 0):
 
-        print('Divs existem... começando a clicar!')
+    print(len(season_divs))
+
+    print('Divs existem... começando a clicar!')
+    print('-----------------------------------------')
+    # Se existir divs, vamos iterar sobre elas
+    for index_div, div in enumerate(season_divs):
+
+        season_divs = browser.find_elements_by_class_name('bSmy5')
+
+        
+        # Efetuar o click
+        season_divs[index_div].click()
+    
+        print(f'Cliquei na div e estou dentro da {index_div}a div')
         print('-----------------------------------------')
-        # Se existir divs, vamos iterar sobre elas
-        for index_div, div in enumerate(class_season_divs):
 
-            class_season_divs = browser.find_elements_by_class_name('bSmy5')
+        # Dentro da div, iremos buscar os elements cujo nome da classe é akerZd
 
-            # Efetuar o click
-            class_season_divs[index_div].click()
+        print(f'Buscando todos os botões da {index_div}a div')
+        print('-----------------------------------------')
+        download_modal_button_episode = browser.find_elements_by_class_name('akerZd')
 
-            sleep(5);
+        print(len(download_modal_button_episode))
+        return 1
 
-            print(f'Cliquei na div e estou dentro da {index_div}a div')
-            print('-----------------------------------------')
 
-            # Dentro da div, iremos buscar os elements cujo nome da classe é akerZd
+        sleep(2);
 
-            print(f'Buscando todos os botões da {index_div}a div')
-            print('-----------------------------------------')
-            download_modal_button_episode = browser.find_elements_by_class_name('akerZd')
+        print("Encontrei os botões, vamos começar a clicar")
+        print('-----------------------------------------')
+        for index_btn, modal_button in enumerate(download_modal_button_episode):
 
             sleep(2);
-
-            print("Encontrei os botões, vamos começar a clicar")
+            modal_button.click()
+            print(f"Cliquei no {index_btn} botão da {index_div}a div")
             print('-----------------------------------------')
-            for index_btn, modal_button in enumerate(download_modal_button_episode):
 
-                sleep(2);
-                modal_button.click()
-                print(f"Cliquei no {index_btn} botão da {index_div}a div")
-                print('-----------------------------------------')
+            sleep(2);
+            download_button = browser.find_elements_by_class_name('h-De-Vb')[0]
+            print("Encontrei o botão de download principal")
+            print('-----------------------------------------')
 
-                sleep(2);
-                download_button = browser.find_elements_by_class_name('h-De-Vb')[0]
-                print("Encontrei o botão de download principal")
-                print('-----------------------------------------')
+            #download_button.click()
+            print("Cliquei no botão de download principal")
+            print('-----------------------------------------')
 
-                #download_button.click()
-                print("Cliquei no botão de download principal")
-                print('-----------------------------------------')
+            sleep(2)
 
-                sleep(2)
+            print(f"Baixando episódio {index_btn}!")
 
-                print(f"Baixando episódio {index_btn}!")
-
-            browser.execute_script("window.history.go(-1)")
+        browser.execute_script("window.history.go(-1)")
 
 
 
